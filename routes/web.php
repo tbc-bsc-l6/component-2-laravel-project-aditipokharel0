@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ModuleController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,4 +30,12 @@ Route::get('/admin', function () {
 
     return view('admin.dashboard');
 })->middleware('auth');
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::patch('/modules/{module}/archive', [ModuleController::class, 'archive'])->name('modules.archive');
+    Route::patch('/modules/{module}/unarchive', [ModuleController::class, 'unarchive'])->name('modules.unarchive');
+    Route::resource('modules', ModuleController::class);
+});
+
+
 
