@@ -14,9 +14,14 @@ class ModuleController extends Controller
     }
 
     public function create()
-    {
-        return view('modules.create');
-    }
+{
+    $teachers = \App\Models\User::whereRaw('LOWER(role) = ?', ['teacher'])
+        ->orderBy('name')
+        ->get();
+
+    return view('modules.create', compact('teachers'));
+}
+
 
     public function store(Request $request)
     {
@@ -24,6 +29,8 @@ class ModuleController extends Controller
             'code' => 'required|string|max:50|unique:modules,code',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'teacher_id' => 'nullable|exists:users,id',
+
         ]);
 
         Module::create($data);
@@ -37,9 +44,14 @@ class ModuleController extends Controller
     }
 
     public function edit(Module $module)
-    {
-        return view('modules.edit', compact('module'));
-    }
+{
+    $teachers = \App\Models\User::whereRaw('LOWER(role) = ?', ['teacher'])
+        ->orderBy('name')
+        ->get();
+
+    return view('modules.edit', compact('module', 'teachers'));
+}
+
 
     public function update(Request $request, Module $module)
     {
@@ -47,6 +59,8 @@ class ModuleController extends Controller
             'code' => 'required|string|max:50|unique:modules,code,' . $module->id,
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'teacher_id' => 'nullable|exists:users,id',
+
         ]);
 
         $module->update($data);
