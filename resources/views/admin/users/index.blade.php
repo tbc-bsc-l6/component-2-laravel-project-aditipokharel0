@@ -14,6 +14,18 @@
                     </div>
                 </div>
 
+                @if(session('success'))
+                    <div class="mb-4 p-3 border rounded text-sm">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="mb-4 p-3 border rounded text-sm">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
@@ -35,7 +47,19 @@
                                         </span>
                                     </td>
                                     <td class="py-3 pr-4">
-                                        <a href="#" class="underline">Change Role</a>
+                                        <form method="POST" action="{{ route('admin.users.role', $user) }}" class="flex items-center gap-2">
+                                            @csrf
+                                            @method('PATCH')
+
+                                            <select name="role" class="border rounded px-2 py-1 text-sm">
+                                                <option value="admin" @selected(($user->role ?? 'student') === 'admin')>admin</option>
+                                                <option value="teacher" @selected(($user->role ?? 'student') === 'teacher')>teacher</option>
+                                                <option value="student" @selected(($user->role ?? 'student') === 'student')>student</option>
+                                                <option value="old_student" @selected(($user->role ?? 'student') === 'old_student')>old_student</option>
+                                            </select>
+
+                                            <button type="submit" class="underline text-sm">Save</button>
+                                        </form>
                                     </td>
                                 </tr>
                             @empty
