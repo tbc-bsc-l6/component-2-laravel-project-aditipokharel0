@@ -1,9 +1,10 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ModuleController;
-
+use App\Http\Controllers\EnrolmentController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return view('welcome');
@@ -21,8 +22,6 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-use Illuminate\Support\Facades\Auth;
-
 Route::get('/admin', function () {
     if (!Auth::user()->isAdmin()) {
         abort(403);
@@ -35,14 +34,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::patch('/modules/{module}/archive', [ModuleController::class, 'archive'])->name('modules.archive');
     Route::patch('/modules/{module}/unarchive', [ModuleController::class, 'unarchive'])->name('modules.unarchive');
     Route::resource('modules', ModuleController::class);
-});
-Route::middleware('auth')->group(function () {
+
     Route::get('/admin/users', function () {
         return view('admin.users.index', [
             'users' => \App\Models\User::orderBy('name')->get(),
         ]);
     })->name('admin.users.index');
+});
 
+Route::middleware('auth')->group(function () {
     Route::get('/teacher/modules', function () {
         return view('teacher.modules.index', [
             'modules' => \App\Models\Module::where('teacher_id', auth()->id())->get(),
@@ -62,7 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/history', function () {
         return view('student.history.index');
     })->name('student.history.index');
+
+    Route::post('/modules/{module}/enrol', [EnrolmentController::class, 'store'])
+        ->name('modules.enrol');
 });
-
-
-

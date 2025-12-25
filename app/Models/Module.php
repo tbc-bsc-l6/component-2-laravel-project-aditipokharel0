@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
 
 class Module extends Model
 {
@@ -21,5 +20,17 @@ class Module extends Model
     public function teacher()
     {
         return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function enrolments()
+    {
+        return $this->hasMany(Enrolment::class);
+    }
+
+    public function students()
+    {
+        return $this->belongsToMany(User::class, 'enrolments')
+            ->withPivot(['start_date', 'completion_date', 'result'])
+            ->withTimestamps();
     }
 }

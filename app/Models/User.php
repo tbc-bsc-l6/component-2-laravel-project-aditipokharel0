@@ -42,10 +42,32 @@ class User extends Authenticatable
         return $this->role === 'teacher';
     }
 
+    public function isStudent()
+    {
+        return $this->role === 'student';
+    }
+
+    public function isOldStudent()
+    {
+        return $this->role === 'old_student';
+    }
+
     // ---------- RELATIONSHIPS ----------
 
     public function modulesTeaching()
     {
         return $this->hasMany(Module::class, 'teacher_id');
+    }
+
+    public function enrolments()
+    {
+        return $this->hasMany(Enrolment::class);
+    }
+
+    public function modules()
+    {
+        return $this->belongsToMany(Module::class, 'enrolments')
+            ->withPivot(['start_date', 'completion_date', 'result'])
+            ->withTimestamps();
     }
 }
