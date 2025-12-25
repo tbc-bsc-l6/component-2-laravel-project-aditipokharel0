@@ -5,8 +5,10 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\EnrolmentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use App\Models\User;
 use App\Models\Module;
+use App\Models\Enrolment;
 
 Route::get('/', function () {
     return view('welcome');
@@ -59,6 +61,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+
     Route::get('/teacher/modules', function () {
         return view('teacher.modules.index', [
             'modules' => Module::where('teacher_id', auth()->id())->get(),
@@ -72,7 +75,25 @@ Route::middleware('auth')->group(function () {
     })->name('student.catalog.index');
 
     Route::get('/my-enrolments', function () {
-        return view('student.enrolments.index');
+        $user = auth()->user();
+
+        if (($user->role ?? 'student') !== 'student') {
+            abort(403);
+        }
+
+        $enrolments = Enrolment::with('module')
+            ->where('status', 'active')
+            ->where(function ($q) use ($user) {
+                $q->where('student_id', $user->id);
+
+                if (Schema::hasColumn('enrolments', 'user_id')) {
+                    $q->orWhere('user_id', $user->id);
+                }
+            })
+            ->orderByDesc('start_date')
+            ->get();
+
+        return view('student.enrolments.index', compact('enrolments'));
     })->name('student.enrolments.index');
 
     Route::get('/history', function () {
