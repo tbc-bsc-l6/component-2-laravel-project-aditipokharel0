@@ -14,22 +14,21 @@ return new class extends Migration
     Schema::create('enrolments', function (Blueprint $table) {
         $table->id();
 
-        $table->foreignId('user_id')->constrained()->cascadeOnDelete();
         $table->foreignId('module_id')->constrained()->cascadeOnDelete();
+        $table->foreignId('student_id')->constrained('users')->cascadeOnDelete();
 
         $table->date('start_date');
-        $table->dateTime('completion_date')->nullable();
+        $table->date('completion_date')->nullable();
 
+        $table->enum('status', ['active', 'completed'])->default('active');
         $table->enum('result', ['PASS', 'FAIL'])->nullable();
+        $table->timestamp('result_set_at')->nullable();
 
         $table->timestamps();
 
-        $table->unique(['user_id', 'module_id']);
+        $table->unique(['module_id', 'student_id']);
     });
 }
-
-    
-    
 
     /**
      * Reverse the migrations.

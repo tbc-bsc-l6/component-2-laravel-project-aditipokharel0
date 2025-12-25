@@ -13,6 +13,18 @@
                     </div>
                 </div>
 
+                @if(session('success'))
+                    <div class="mb-4 p-3 border rounded text-sm">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="mb-4 p-3 border rounded text-sm">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     @forelse($modules as $module)
                         <div class="border rounded-lg p-4">
@@ -26,9 +38,17 @@
                                 </span>
                             </div>
 
-                            <div class="mt-4 flex items-center justify-end gap-2">
+                            <div class="mt-4 flex items-center justify-end gap-3">
                                 <a href="#" class="underline text-sm">View</a>
-                                <button class="text-sm underline">Enrol</button>
+
+                                @if($module->is_active)
+                                    <form method="POST" action="{{ route('modules.enrol', $module) }}">
+                                        @csrf
+                                        <button type="submit" class="text-sm underline">Enrol</button>
+                                    </form>
+                                @else
+                                    <span class="text-sm text-gray-500">Enrol closed</span>
+                                @endif
                             </div>
                         </div>
                     @empty

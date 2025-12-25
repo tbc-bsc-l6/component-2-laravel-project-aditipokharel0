@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Enrolment;
 
 class Module extends Model
 {
@@ -27,10 +29,23 @@ class Module extends Model
         return $this->hasMany(Enrolment::class);
     }
 
+    public function activeEnrolments()
+    {
+        return $this->hasMany(Enrolment::class)->where('status', 'active');
+    }
+
     public function students()
     {
-        return $this->belongsToMany(User::class, 'enrolments')
-            ->withPivot(['start_date', 'completion_date', 'result'])
+        return $this->belongsToMany(User::class, 'enrolments', 'module_id', 'student_id')
+            ->withPivot(['start_date', 'completion_date', 'status', 'result', 'result_set_at'])
+            ->withTimestamps();
+    }
+
+    public function activeStudents()
+    {
+        return $this->belongsToMany(User::class, 'enrolments', 'module_id', 'student_id')
+            ->wherePivot('status', 'active')
+            ->withPivot(['start_date', 'completion_date', 'status', 'result', 'result_set_at'])
             ->withTimestamps();
     }
 }

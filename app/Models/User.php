@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Module;
+use App\Models\Enrolment;
 
 class User extends Authenticatable
 {
@@ -61,13 +63,26 @@ class User extends Authenticatable
 
     public function enrolments()
     {
-        return $this->hasMany(Enrolment::class);
+        return $this->hasMany(Enrolment::class, 'student_id');
+    }
+
+    public function activeEnrolments()
+    {
+        return $this->hasMany(Enrolment::class, 'student_id')->where('status', 'active');
     }
 
     public function modules()
     {
-        return $this->belongsToMany(Module::class, 'enrolments')
-            ->withPivot(['start_date', 'completion_date', 'result'])
+        return $this->belongsToMany(Module::class, 'enrolments', 'student_id', 'module_id')
+            ->withPivot(['start_date', 'completion_date', 'status', 'result', 'result_set_at'])
+            ->withTimestamps();
+    }
+
+    public function activeModules()
+    {
+        return $this->belongsToMany(Module::class, 'enrolments', 'student_id', 'module_id')
+            ->wherePivot('status', 'active')
+            ->withPivot(['start_date', 'completion_date', 'status', 'result', 'result_set_at'])
             ->withTimestamps();
     }
 }
