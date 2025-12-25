@@ -46,7 +46,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
             'role' => 'required|in:admin,teacher,student,old_student',
         ]);
 
-        if (auth()->id() === $user->id() && $data['role'] !== 'admin') {
+        if (auth()->id() === $user->id && $data['role'] !== 'admin') {
             return back()->with('error', 'You cannot remove your own admin role.');
         }
 
@@ -63,12 +63,70 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Route::middleware('auth')->group(function () {
 
     Route::get('/teacher/modules', function () {
+        $user = auth()->user();
+
+        if (($user->role ?? 'student') !== 'teacher') {
+            abort(403);
+        }
+
         return view('teacher.modules.index', [
-            'modules' => Module::where('teacher_id', auth()->id())->get(),
+            'modules' => Module::where('teacher_id', $user->id)->get(),
         ]);
     })->name('teacher.modules.index');
 
+    Route::get('/teacher/modules/{module}/students', function (Module $module) {
+        $user = auth()->user();
+
+        if (($user->role ?? 'student') !== 'teacher') {
+            abort(403);
+        }
+
+        if ($module->teacher_id !== $user->id) {
+            abort(403);
+        }
+
+        $enrolments = Enrolment::with('student')
+            ->where('module_id', $module->id)
+            ->where('status', 'active')
+            ->get();
+
+        return view('teacher.modules.students', compact('module', 'enrolments'));
+    })->name('teacher.modules.students');
+
+    Route::post('/teacher/enrolments/{enrolment}/mark', function (Request $request, Enrolment $enrolment) {
+        $user = auth()->user();
+
+        if (($user->role ?? 'student') !== 'teacher') {
+            abort(403);
+        }
+
+        $module = Module::findOrFail($enrolment->module_id);
+
+        if ($module->teacher_id !== $user->id) {
+            abort(403);
+        }
+
+        $data = $request->validate([
+            'result' => 'required|in:PASS,FAIL',
+        ]);
+
+        $enrolment->update([
+            'result' => $data['result'],
+            'result_set_at' => now(),
+            'completion_date' => now()->toDateString(),
+            'status' => 'completed',
+        ]);
+
+        return back()->with('success', 'Result saved.');
+    })->name('teacher.enrolments.mark');
+
     Route::get('/catalog', function () {
+        $user = auth()->user();
+
+        if (($user->role ?? 'student') !== 'student') {
+            abort(403);
+        }
+
         return view('student.catalog.index', [
             'modules' => Module::where('is_active', true)->get(),
         ]);
@@ -97,7 +155,25 @@ Route::middleware('auth')->group(function () {
     })->name('student.enrolments.index');
 
     Route::get('/history', function () {
-        return view('student.history.index');
+        $user = auth()->user();
+
+        if (!in_array(($user->role ?? 'student'), ['student', 'old_student'])) {
+            abort(403);
+        }
+
+        $enrolments = Enrolment::with('module')
+            ->where('status', 'completed')
+            ->where(function ($q) use ($user) {
+                $q->where('student_id', $user->id);
+
+                if (Schema::hasColumn('enrolments', 'user_id')) {
+                    $q->orWhere('user_id', $user->id);
+                }
+            })
+            ->orderByDesc('completion_date')
+            ->get();
+
+        return view('student.history.index', compact('enrolments'));
     })->name('student.history.index');
 
     Route::post('/modules/{module}/enrol', [EnrolmentController::class, 'store'])
