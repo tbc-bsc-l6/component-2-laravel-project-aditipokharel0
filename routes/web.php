@@ -81,6 +81,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
         if (($user->role ?? 'student') !== 'teacher') {
             abort(403);
         }
+        if ($user->id === auth()->id()) {
+        return back()->with('error', 'You cannot remove your own account.');
+    }
 
         Module::where('teacher_id', $user->id)->update(['teacher_id' => null]);
 
