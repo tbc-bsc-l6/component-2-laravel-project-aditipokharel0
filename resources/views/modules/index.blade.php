@@ -62,16 +62,7 @@
                                         </form>
                                     @endif
 
-                                    <span class="mx-2">|</span>
-
-                                    <form class="inline" method="POST" action="{{ route('modules.destroy', $module) }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="underline" type="submit"
-                                            onclick="return confirm('Are you sure you want to delete this module?')">
-                                            Delete
-                                        </button>
-                                    </form>
+                                    
 
                                 </td>
                             </tr>

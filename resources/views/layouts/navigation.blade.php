@@ -33,7 +33,7 @@
                         </x-nav-link>
                     @endif
 
-                    @if(!Auth::user()->isAdmin() && !Auth::user()->isTeacher())
+                    @if(Auth::user()->isStudent())
                         <x-nav-link :href="route('student.catalog.index')" :active="request()->routeIs('student.catalog.*')">
                             Available Modules
                         </x-nav-link>
@@ -42,6 +42,12 @@
                             My Enrolments
                         </x-nav-link>
 
+                        <x-nav-link :href="route('student.history.index')" :active="request()->routeIs('student.history.*')">
+                            History
+                        </x-nav-link>
+                    @endif
+
+                    @if(Auth::user()->isOldStudent())
                         <x-nav-link :href="route('student.history.index')" :active="request()->routeIs('student.history.*')">
                             History
                         </x-nav-link>
@@ -118,7 +124,7 @@
                 </x-responsive-nav-link>
             @endif
 
-            @if(!Auth::user()->isAdmin() && !Auth::user()->isTeacher())
+            @if(Auth::user()->isStudent())
                 <x-responsive-nav-link :href="route('student.catalog.index')" :active="request()->routeIs('student.catalog.*')">
                     Available Modules
                 </x-responsive-nav-link>
@@ -127,6 +133,12 @@
                     My Enrolments
                 </x-responsive-nav-link>
 
+                <x-responsive-nav-link :href="route('student.history.index')" :active="request()->routeIs('student.history.*')">
+                    History
+                </x-responsive-nav-link>
+            @endif
+
+            @if(Auth::user()->isOldStudent())
                 <x-responsive-nav-link :href="route('student.history.index')" :active="request()->routeIs('student.history.*')">
                     History
                 </x-responsive-nav-link>

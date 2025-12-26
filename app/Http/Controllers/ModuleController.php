@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Module;
 use Illuminate\Http\Request;
+use App\Models\Enrolment;
+
 
 class ModuleController extends Controller
 {
@@ -39,9 +41,16 @@ class ModuleController extends Controller
     }
 
     public function show(Module $module)
-    {
-        return view('modules.show', compact('module'));
-    }
+{
+    $enrolments = Enrolment::with('student')
+        ->where('module_id', $module->id)
+        ->where('status', 'active')
+        ->orderBy('start_date')
+        ->get();
+
+    return view('modules.show', compact('module', 'enrolments'));
+}
+
 
     public function edit(Module $module)
 {
@@ -69,10 +78,10 @@ class ModuleController extends Controller
     }
 
     public function destroy(Module $module)
-    {
-        $module->delete();
-        return redirect()->route('modules.index');
-    }
+{
+    abort(403);
+}
+
     public function archive(Module $module)
 {
     $module->update(['is_active' => false]);

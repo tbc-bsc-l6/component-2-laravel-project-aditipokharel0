@@ -6,6 +6,7 @@ use App\Http\Controllers\EnrolmentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Module;
 use App\Models\Enrolment;
@@ -58,10 +59,52 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
         return back()->with('success', 'Role updated successfully.');
     })->name('admin.users.role');
+
+    Route::post('/admin/teachers', function (Request $request) {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8',
+        ]);
+
+        User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'role' => 'teacher',
+        ]);
+
+        return back()->with('success', 'Teacher created.');
+    })->name('admin.teachers.store');
+
+    Route::delete('/admin/teachers/{user}', function (User $user) {
+        if (($user->role ?? 'student') !== 'teacher') {
+            abort(403);
+        }
+
+        Module::where('teacher_id', $user->id)->update(['teacher_id' => null]);
+
+        $user->delete();
+
+        return back()->with('success', 'Teacher removed.');
+    })->name('admin.teachers.destroy');
+
+    Route::delete('/admin/modules/{module}/enrolments/{enrolment}', function (Module $module, Enrolment $enrolment) {
+        if ($enrolment->module_id !== $module->id) {
+            abort(404);
+        }
+
+        if ($enrolment->status !== 'active') {
+            return back()->with('error', 'Only active enrolments can be removed.');
+        }
+
+        $enrolment->delete();
+
+        return back()->with('success', 'Student removed from module.');
+    })->name('admin.modules.enrolments.destroy');
 });
 
 Route::middleware('auth')->group(function () {
-
     Route::get('/teacher/modules', function () {
         $user = auth()->user();
 
