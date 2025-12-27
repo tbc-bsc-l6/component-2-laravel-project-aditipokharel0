@@ -44,36 +44,54 @@
                     </div>
                 @endif
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    @forelse($modules as $module)
-                        <div class="border rounded-lg p-4">
-                            <div class="flex items-start justify-between">
-                                <div>
-                                    <div class="font-semibold text-gray-900">{{ $module->code }} - {{ $module->title }}</div>
-                                    <div class="text-sm text-gray-600 mt-1">{{ $module->description }}</div>
-                                </div>
-                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs border">
-                                    {{ $module->is_active ? 'Available' : 'Archived' }}
-                                </span>
-                            </div>
-
-                            <div class="mt-4 flex items-center justify-end gap-3">
-                                <a href="{{ route('student.catalog.show', $module) }}" class="underline text-sm">View</a>
-
-                                @if($module->is_active)
-                                    <form method="POST" action="{{ route('modules.enrol', $module) }}">
-                                        @csrf
-                                        <button type="submit" class="text-sm underline">Enrol</button>
-                                    </form>
-                                @else
-                                    <span class="text-sm text-gray-500">Enrol closed</span>
-                                @endif
-                            </div>
-                        </div>
-                    @empty
-                        <div class="text-gray-600">No available modules.</div>
-                    @endforelse
+                <div class="mt-3 text-sm text-gray-600">
+                    Showing {{ $modules->count() }} of {{ $modules->total() }} modules
                 </div>
+
+                @if($modules->count() === 0)
+                    <div class="mt-6 p-6 bg-white shadow-sm sm:rounded-lg text-sm text-gray-700 border rounded-lg">
+                        No modules found. Try different keywords or clear filters.
+                    </div>
+                @else
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        @foreach($modules as $module)
+                            <div class="border rounded-lg p-4">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <div class="font-semibold text-gray-900">
+                                            {{ $module->code }} - {{ $module->title }}
+                                        </div>
+
+                                        <div class="text-xs text-gray-500 mt-1">
+                                            Teacher: {{ optional($module->teacher)->name ?? 'Not assigned' }}
+                                        </div>
+
+                                        <div class="text-sm text-gray-600 mt-2">
+                                            {{ $module->description }}
+                                        </div>
+                                    </div>
+
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs border">
+                                        {{ $module->is_active ? 'Available' : 'Archived' }}
+                                    </span>
+                                </div>
+
+                                <div class="mt-4 flex items-center justify-end gap-3">
+                                    <a href="{{ route('student.catalog.show', $module) }}" class="underline text-sm">View</a>
+
+                                    @if($module->is_active)
+                                        <form method="POST" action="{{ route('modules.enrol', $module) }}">
+                                            @csrf
+                                            <button type="submit" class="text-sm underline">Enrol</button>
+                                        </form>
+                                    @else
+                                        <span class="text-sm text-gray-500">Enrol closed</span>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
 
                 <div class="mt-6">
                     {{ $modules->links() }}
