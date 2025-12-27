@@ -8,9 +8,28 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 <div class="flex items-center justify-between mb-4">
                     <div class="text-sm text-gray-600">Browse modules you can enrol into.</div>
-                    <div class="w-72">
-                        <input class="border rounded-md w-full px-3 py-2 text-sm" placeholder="Search (UI only for now)" />
-                    </div>
+
+                    <form method="GET" action="{{ route('student.catalog.index') }}" class="flex items-center gap-2">
+                        <input
+                            name="q"
+                            value="{{ $q ?? request('q') }}"
+                            class="border rounded-md px-3 py-2 text-sm w-56"
+                            placeholder="Search code, title, description"
+                        />
+
+                        <select name="teacher" class="border rounded-md px-3 py-2 text-sm">
+                            <option value="">All teachers</option>
+                            @foreach($teachers as $t)
+                                <option value="{{ $t->id }}" @selected((string)($teacher ?? request('teacher')) === (string)$t->id)>
+                                    {{ $t->name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <button class="border rounded-md px-3 py-2 text-sm" type="submit">Search</button>
+
+                        <a class="text-sm underline" href="{{ route('student.catalog.index') }}">Clear</a>
+                    </form>
                 </div>
 
                 @if(session('success'))
@@ -39,7 +58,7 @@
                             </div>
 
                             <div class="mt-4 flex items-center justify-end gap-3">
-                                <a href="#" class="underline text-sm">View</a>
+                                <a href="{{ route('student.catalog.show', $module) }}" class="underline text-sm">View</a>
 
                                 @if($module->is_active)
                                     <form method="POST" action="{{ route('modules.enrol', $module) }}">
@@ -54,6 +73,10 @@
                     @empty
                         <div class="text-gray-600">No available modules.</div>
                     @endforelse
+                </div>
+
+                <div class="mt-6">
+                    {{ $modules->links() }}
                 </div>
             </div>
         </div>

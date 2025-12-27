@@ -166,17 +166,55 @@ Route::middleware('auth')->group(function () {
         return back()->with('success', 'Result saved.');
     })->name('teacher.enrolments.mark');
 
-    Route::get('/catalog', function () {
-        $user = auth()->user();
+    Route::get('/catalog', function (Request $request) {
+    $user = auth()->user();
 
-        if (($user->role ?? 'student') !== 'student') {
-            abort(403);
-        }
+    if (($user->role ?? 'student') !== 'student') {
+        abort(403);
+    }
 
-        return view('student.catalog.index', [
-            'modules' => Module::where('is_active', true)->get(),
-        ]);
-    })->name('student.catalog.index');
+    $q = trim((string) $request->query('q', ''));
+    $teacher = $request->query('teacher');
+
+    $modulesQuery = Module::query()->where('is_active', true);
+
+    if ($q !== '') {
+        $modulesQuery->where(function ($qq) use ($q) {
+            $qq->where('code', 'like', "%{$q}%")
+               ->orWhere('title', 'like', "%{$q}%")
+               ->orWhere('description', 'like', "%{$q}%");
+        });
+    }
+
+    if ($teacher) {
+        $modulesQuery->where('teacher_id', $teacher);
+    }
+
+    $modules = $modulesQuery
+        ->orderBy('code')
+        ->paginate(12)
+        ->withQueryString();
+
+    $teachers = User::where('role', 'teacher')->orderBy('name')->get();
+
+    return view('student.catalog.index', compact('modules', 'teachers', 'q', 'teacher'));
+})->name('student.catalog.index');
+
+Route::get('/catalog/{module}', function (Module $module) {
+    $user = auth()->user();
+
+    if (($user->role ?? 'student') !== 'student') {
+        abort(403);
+    }
+
+    if (!$module->is_active) {
+        abort(404);
+    }
+
+    return view('student.catalog.show', compact('module'));
+})->name('student.catalog.show');
+
+
 
     Route::get('/my-enrolments', function () {
         $user = auth()->user();
