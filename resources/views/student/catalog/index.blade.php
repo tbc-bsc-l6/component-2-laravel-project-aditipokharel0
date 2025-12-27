@@ -82,7 +82,14 @@
                                     @if($module->is_active)
                                         <form method="POST" action="{{ route('modules.enrol', $module) }}">
                                             @csrf
-                                            <button type="submit" class="text-sm underline">Enrol</button>
+                                            <button
+    type="submit"
+    class="border rounded-md px-3 py-2 text-sm underline"
+    onclick="return confirm('Enrol in {{ $module->code }} - {{ $module->title }}?');"
+>
+    Enrol
+</button>
+
                                         </form>
                                     @else
                                         <span class="text-sm text-gray-500">Enrol closed</span>
