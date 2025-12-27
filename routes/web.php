@@ -81,9 +81,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
         if (($user->role ?? 'student') !== 'teacher') {
             abort(403);
         }
+
         if ($user->id === auth()->id()) {
-        return back()->with('error', 'You cannot remove your own account.');
-    }
+            return back()->with('error', 'You cannot remove your own account.');
+        }
 
         Module::where('teacher_id', $user->id)->update(['teacher_id' => null]);
 
@@ -107,25 +108,19 @@ Route::middleware(['auth', 'admin'])->group(function () {
     })->name('admin.modules.enrolments.destroy');
 });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/teacher/modules', function () {
+Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->group(function () {
+    Route::get('/modules', function () {
         $user = auth()->user();
 
-        if (($user->role ?? 'student') !== 'teacher') {
-            abort(403);
-        }
+        $modules = Module::where('teacher_id', $user->id)
+            ->orderBy('code')
+            ->get();
 
-        return view('teacher.modules.index', [
-            'modules' => Module::where('teacher_id', $user->id)->get(),
-        ]);
+        return view('teacher.modules.index', compact('modules'));
     })->name('teacher.modules.index');
 
-    Route::get('/teacher/modules/{module}/students', function (Module $module) {
+    Route::get('/modules/{module}/students', function (Module $module) {
         $user = auth()->user();
-
-        if (($user->role ?? 'student') !== 'teacher') {
-            abort(403);
-        }
 
         if ($module->teacher_id !== $user->id) {
             abort(403);
@@ -139,12 +134,8 @@ Route::middleware('auth')->group(function () {
         return view('teacher.modules.students', compact('module', 'enrolments'));
     })->name('teacher.modules.students');
 
-    Route::post('/teacher/enrolments/{enrolment}/mark', function (Request $request, Enrolment $enrolment) {
+    Route::post('/enrolments/{enrolment}/mark', function (Request $request, Enrolment $enrolment) {
         $user = auth()->user();
-
-        if (($user->role ?? 'student') !== 'teacher') {
-            abort(403);
-        }
 
         $module = Module::findOrFail($enrolment->module_id);
 
@@ -165,66 +156,52 @@ Route::middleware('auth')->group(function () {
 
         return back()->with('success', 'Result saved.');
     })->name('teacher.enrolments.mark');
+});
 
+Route::middleware(['auth', 'role:student'])->group(function () {
     Route::get('/catalog', function (Request $request) {
-    $user = auth()->user();
+        $q = trim((string) $request->query('q', ''));
+        $teacher = $request->query('teacher');
 
-    if (($user->role ?? 'student') !== 'student') {
-        abort(403);
-    }
+        $modulesQuery = Module::query()->where('is_active', true);
 
-    $q = trim((string) $request->query('q', ''));
-    $teacher = $request->query('teacher');
+        if ($q !== '') {
+            $modulesQuery->where(function ($qq) use ($q) {
+                $qq->where('code', 'like', "%{$q}%")
+                    ->orWhere('title', 'like', "%{$q}%")
+                    ->orWhere('description', 'like', "%{$q}%");
+            });
+        }
 
-    $modulesQuery = Module::query()->where('is_active', true);
+        if ($teacher) {
+            $modulesQuery->where('teacher_id', $teacher);
+        }
 
-    if ($q !== '') {
-        $modulesQuery->where(function ($qq) use ($q) {
-            $qq->where('code', 'like', "%{$q}%")
-               ->orWhere('title', 'like', "%{$q}%")
-               ->orWhere('description', 'like', "%{$q}%");
-        });
-    }
+        $modules = $modulesQuery
+            ->orderBy('code')
+            ->paginate(12)
+            ->withQueryString();
 
-    if ($teacher) {
-        $modulesQuery->where('teacher_id', $teacher);
-    }
+        $teachers = User::where('role', 'teacher')->orderBy('name')->get();
 
-    $modules = $modulesQuery
-        ->orderBy('code')
-        ->paginate(12)
-        ->withQueryString();
+        return view('student.catalog.index', compact('modules', 'teachers', 'q', 'teacher'));
+    })->name('student.catalog.index');
 
-    $teachers = User::where('role', 'teacher')->orderBy('name')->get();
+    Route::get('/catalog/{module}', function (Module $module) {
+        if (!$module->is_active) {
+            abort(404);
+        }
 
-    return view('student.catalog.index', compact('modules', 'teachers', 'q', 'teacher'));
-})->name('student.catalog.index');
+        return view('student.catalog.show', compact('module'));
+    })->name('student.catalog.show');
 
-Route::get('/catalog/{module}', function (Module $module) {
-    $user = auth()->user();
-
-    if (($user->role ?? 'student') !== 'student') {
-        abort(403);
-    }
-
-    if (!$module->is_active) {
-        abort(404);
-    }
-
-    return view('student.catalog.show', compact('module'));
-})->name('student.catalog.show');
-
-
+    Route::post('/modules/{module}/enrol', [EnrolmentController::class, 'store'])
+        ->name('modules.enrol');
 
     Route::get('/my-enrolments', function () {
         $user = auth()->user();
 
-        if (($user->role ?? 'student') !== 'student') {
-            abort(403);
-        }
-
         $enrolments = Enrolment::with('module')
-            ->where('status', 'active')
             ->where(function ($q) use ($user) {
                 $q->where('student_id', $user->id);
 
@@ -232,18 +209,17 @@ Route::get('/catalog/{module}', function (Module $module) {
                     $q->orWhere('user_id', $user->id);
                 }
             })
+            ->where('status', 'active')
             ->orderByDesc('start_date')
             ->get();
 
         return view('student.enrolments.index', compact('enrolments'));
     })->name('student.enrolments.index');
+});
 
+Route::middleware(['auth', 'role:student,old_student'])->group(function () {
     Route::get('/history', function () {
         $user = auth()->user();
-
-        if (!in_array(($user->role ?? 'student'), ['student', 'old_student'])) {
-            abort(403);
-        }
 
         $enrolments = Enrolment::with('module')
             ->where('status', 'completed')
@@ -259,7 +235,4 @@ Route::get('/catalog/{module}', function (Module $module) {
 
         return view('student.history.index', compact('enrolments'));
     })->name('student.history.index');
-
-    Route::post('/modules/{module}/enrol', [EnrolmentController::class, 'store'])
-        ->name('modules.enrol');
 });
