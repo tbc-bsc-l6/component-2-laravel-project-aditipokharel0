@@ -36,15 +36,15 @@
                             <div class="text-sm text-gray-600 mt-1">View assigned modules and students.</div>
                         </a>
 
-                        <div class="border rounded-lg p-4">
+                        <a href="{{ route('teacher.modules.index') }}" class="block border rounded-lg p-4 hover:bg-gray-50">
                             <div class="font-semibold">Mark Results</div>
-                            <div class="text-sm text-gray-600 mt-1">Set PASS/FAIL with timestamp (backend next).</div>
-                        </div>
+                            <div class="text-sm text-gray-600 mt-1">Open a module and mark PASS/FAIL for students.</div>
+                        </a>
 
-                        <div class="border rounded-lg p-4">
+                        <a href="{{ route('teacher.modules.index') }}" class="block border rounded-lg p-4 hover:bg-gray-50">
                             <div class="font-semibold">Quick Tip</div>
-                            <div class="text-sm text-gray-600 mt-1">Only modules assigned to you should show here.</div>
-                        </div>
+                            <div class="text-sm text-gray-600 mt-1">Only modules assigned to you will appear in My Modules.</div>
+                        </a>
                     @endif
 
                     @if(!Auth::user()->isAdmin() && !Auth::user()->isTeacher())
@@ -69,3 +69,4 @@
         </div>
     </div>
 </x-app-layout>
+
