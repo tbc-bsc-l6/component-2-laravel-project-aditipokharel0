@@ -14,7 +14,7 @@
                     </x-nav-link>
 
                     @if(Auth::user()->isAdmin())
-                        <x-nav-link href="{{ url('/admin') }}" :active="request()->is('admin')">
+                        <x-nav-link href="{{ url('/admin') }}" :active="request()->is('admin*')">
                             Admin
                         </x-nav-link>
 
@@ -105,7 +105,7 @@
             </x-responsive-nav-link>
 
             @if(Auth::user()->isAdmin())
-                <x-responsive-nav-link href="{{ url('/admin') }}" :active="request()->is('admin')">
+                <x-responsive-nav-link href="{{ url('/admin') }}" :active="request()->is('admin*')">
                     Admin
                 </x-responsive-nav-link>
 
