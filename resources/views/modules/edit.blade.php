@@ -9,6 +9,12 @@
         <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
 
+                <div class="mb-4">
+                    <a href="{{ route('modules.index') }}" class="text-sm text-gray-600 hover:underline">
+                        ← Back to Modules
+                    </a>
+                </div>
+
                 <form method="POST" action="{{ route('modules.update', $module) }}">
                     @csrf
                     @method('PUT')
