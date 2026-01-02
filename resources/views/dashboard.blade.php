@@ -28,9 +28,7 @@
                             <div class="font-semibold">Users</div>
                             <div class="text-sm text-gray-600 mt-1">Add/remove teachers, change roles.</div>
                         </a>
-                    @endif
-
-                    @if(Auth::user()->isTeacher())
+                    @elseif(Auth::user()->isTeacher())
                         <a href="{{ route('teacher.modules.index') }}" class="block border rounded-lg p-4 hover:bg-gray-50">
                             <div class="font-semibold">My Modules</div>
                             <div class="text-sm text-gray-600 mt-1">View assigned modules and students.</div>
@@ -45,9 +43,7 @@
                             <div class="font-semibold">Quick Tip</div>
                             <div class="text-sm text-gray-600 mt-1">Only modules assigned to you will appear in My Modules.</div>
                         </a>
-                    @endif
-
-                    @if(!Auth::user()->isAdmin() && !Auth::user()->isTeacher())
+                    @elseif(Auth::user()->isStudent())
                         <a href="{{ route('student.catalog.index') }}" class="block border rounded-lg p-4 hover:bg-gray-50">
                             <div class="font-semibold">Available Modules</div>
                             <div class="text-sm text-gray-600 mt-1">Browse and enrol (max 4 later).</div>
@@ -62,6 +58,11 @@
                             <div class="font-semibold">History</div>
                             <div class="text-sm text-gray-600 mt-1">Completed modules with PASS/FAIL.</div>
                         </a>
+                    @elseif(Auth::user()->isOldStudent())
+                        <a href="{{ route('student.history.index') }}" class="block border rounded-lg p-4 hover:bg-gray-50">
+                            <div class="font-semibold">History</div>
+                            <div class="text-sm text-gray-600 mt-1">Completed modules with PASS/FAIL.</div>
+                        </a>
                     @endif
 
                 </div>
@@ -69,4 +70,3 @@
         </div>
     </div>
 </x-app-layout>
-
