@@ -14,22 +14,42 @@ class DatabaseSeeder extends Seeder
     {
         $admin = User::updateOrCreate(
             ['email' => 'admin@example.com'],
-            ['name' => 'Admin User', 'password' => Hash::make('password'), 'role' => 'admin']
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'email_verified_at' => now(),
+            ]
         );
 
         $teacher1 = User::updateOrCreate(
             ['email' => 'teacher1@example.com'],
-            ['name' => 'Teacher One', 'password' => Hash::make('password'), 'role' => 'teacher']
+            [
+                'name' => 'Teacher One',
+                'password' => Hash::make('password'),
+                'role' => 'teacher',
+                'email_verified_at' => now(),
+            ]
         );
 
         $teacher2 = User::updateOrCreate(
             ['email' => 'teacher2@example.com'],
-            ['name' => 'Teacher Two', 'password' => Hash::make('password'), 'role' => 'teacher']
+            [
+                'name' => 'Teacher Two',
+                'password' => Hash::make('password'),
+                'role' => 'teacher',
+                'email_verified_at' => now(),
+            ]
         );
 
         $studentDemo = User::updateOrCreate(
             ['email' => 'student@example.com'],
-            ['name' => 'Student User', 'password' => Hash::make('password'), 'role' => 'student']
+            [
+                'name' => 'Student User',
+                'password' => Hash::make('password'),
+                'role' => 'student',
+                'email_verified_at' => now(),
+            ]
         );
 
         $extraTeachers = User::factory()->count(3)->create(['role' => 'teacher']);
