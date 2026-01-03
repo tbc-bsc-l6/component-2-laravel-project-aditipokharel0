@@ -11,6 +11,8 @@ use App\Models\User;
 use App\Models\Module;
 use App\Models\Enrolment;
 
+// Redirect root route based on authentication status
+// Authenticated users go to dashboard, others to login page
 Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('dashboard');
