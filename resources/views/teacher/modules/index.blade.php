@@ -5,7 +5,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-xl p-6 border border-primary-100">
+            <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg p-6 border border-slate-200">
 
                 @if(session('success'))
                     <div class="mb-4 p-3 border rounded text-sm">
@@ -30,13 +30,13 @@
                 @else
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach($modules as $module)
-                            <div class="border-2 border-primary-200 rounded-xl p-6 bg-gradient-to-br from-white to-primary-50 hover:shadow-lg transition-all duration-300">
+                            <div class="border-2 border-slate-200 rounded-lg p-6 bg-white hover:border-slate-400 hover:shadow-lg transition-all duration-200">
                                 <div class="flex items-start justify-between mb-4">
                                     <div class="flex-1">
-                                        <div class="font-bold text-lg text-gray-900 mb-1">{{ $module->code }}</div>
-                                        <div class="font-semibold text-gray-800 mb-2">{{ $module->title }}</div>
+                                        <div class="font-bold text-lg text-slate-900 mb-1">{{ $module->code }}</div>
+                                        <div class="font-semibold text-slate-800 mb-2">{{ $module->title }}</div>
                                         @if($module->description)
-                                            <div class="text-sm text-gray-600 line-clamp-2">{{ $module->description }}</div>
+                                            <div class="text-sm text-slate-600 line-clamp-2">{{ $module->description }}</div>
                                         @endif
                                     </div>
                                     @if($module->is_active)
@@ -44,14 +44,14 @@
                                             Active
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+                                        <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-slate-100 text-slate-800 border border-slate-200">
                                             Archived
                                         </span>
                                     @endif
                                 </div>
 
-                                <div class="mt-4 pt-4 border-t border-primary-200">
-                                    <a class="inline-flex items-center justify-center w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition duration-150 shadow-md hover:shadow-lg font-medium text-sm" href="{{ route('teacher.modules.students', $module) }}">
+                                <div class="mt-4 pt-4 border-t border-slate-200">
+                                    <a class="inline-flex items-center justify-center w-full px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition duration-150 shadow-sm hover:shadow-md font-medium text-sm" href="{{ route('teacher.modules.students', $module) }}">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                                         </svg>

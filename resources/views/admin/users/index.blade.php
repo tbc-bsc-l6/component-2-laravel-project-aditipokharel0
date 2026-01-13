@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-xl p-6 border border-primary-100">
+            <div class="bg-white overflow-hidden shadow-lg sm:rounded-lg p-6 border border-slate-200">
 
                 <div class="flex items-center justify-between mb-4">
                     <div>
@@ -15,9 +15,9 @@
                     </div>
                 </div>
 
-                <div class="mb-6 border-2 border-primary-200 rounded-xl p-6 bg-gradient-to-br from-primary-50 to-white">
-                    <div class="font-bold text-lg text-primary-900 mb-4 flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="mb-6 border-2 border-slate-200 rounded-lg p-6 bg-slate-50">
+                    <div class="font-semibold text-lg text-slate-900 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
                         Create Teacher
@@ -26,11 +26,11 @@
                     <form method="POST" action="{{ route('admin.teachers.store') }}" class="grid grid-cols-1 md:grid-cols-4 gap-3">
                         @csrf
 
-                        <input class="border border-primary-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500" name="name" placeholder="Name" value="{{ old('name') }}" required>
-                        <input class="border border-primary-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500" name="email" type="email" placeholder="Email" value="{{ old('email') }}" required>
-                        <input class="border border-primary-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500" name="password" type="password" placeholder="Password" required>
+                        <input class="border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-slate-500 focus:border-slate-500" name="name" placeholder="Name" value="{{ old('name') }}" required>
+                        <input class="border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-slate-500 focus:border-slate-500" name="email" type="email" placeholder="Email" value="{{ old('email') }}" required>
+                        <input class="border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-slate-500 focus:border-slate-500" name="password" type="password" placeholder="Password" required>
 
-                        <button type="submit" class="bg-primary-600 text-white rounded-lg px-4 py-2 hover:bg-primary-700 transition duration-150 shadow-md hover:shadow-lg font-medium">Create</button>
+                        <button type="submit" class="bg-slate-900 text-white rounded-lg px-4 py-2 hover:bg-slate-800 transition duration-150 shadow-sm hover:shadow-md font-medium">Create</button>
                     </form>
 
                     @if($errors->any())
@@ -57,16 +57,16 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
-                            <tr class="text-left bg-primary-50 border-b-2 border-primary-200">
-                                <th class="py-3 px-4 font-semibold text-primary-900">Name</th>
-                                <th class="py-3 px-4 font-semibold text-primary-900">Email</th>
-                                <th class="py-3 px-4 font-semibold text-primary-900">Role</th>
-                                <th class="py-3 px-4 font-semibold text-primary-900">Actions</th>
+                            <tr class="text-left bg-slate-50 border-b-2 border-slate-200">
+                                <th class="py-3 px-4 font-semibold text-slate-900">Name</th>
+                                <th class="py-3 px-4 font-semibold text-slate-900">Email</th>
+                                <th class="py-3 px-4 font-semibold text-slate-900">Role</th>
+                                <th class="py-3 px-4 font-semibold text-slate-900">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($users as $user)
-                                <tr class="border-b border-gray-100 hover:bg-primary-50 transition-colors">
+                                <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                                     <td class="py-3 px-4 font-medium text-gray-800">{{ $user->name }}</td>
                                     <td class="py-3 px-4 text-gray-700">{{ $user->email }}</td>
                                     <td class="py-3 px-4">
@@ -90,14 +90,14 @@
                                                 @csrf
                                                 @method('PATCH')
 
-                                                <select name="role" class="border border-primary-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                                <select name="role" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-slate-500 focus:border-slate-500">
                                                     <option value="admin" @selected(($user->role ?? 'student') === 'admin')>admin</option>
                                                     <option value="teacher" @selected(($user->role ?? 'student') === 'teacher')>teacher</option>
                                                     <option value="student" @selected(($user->role ?? 'student') === 'student')>student</option>
                                                     <option value="old_student" @selected(($user->role ?? 'student') === 'old_student')>old_student</option>
                                                 </select>
 
-                                                <button type="submit" class="text-primary-600 hover:text-primary-800 font-medium text-sm">Save</button>
+                                                <button type="submit" class="text-slate-700 hover:text-slate-900 font-medium text-sm">Save</button>
                                             </form>
 
                                             @if(($user->role ?? 'student') === 'teacher')
