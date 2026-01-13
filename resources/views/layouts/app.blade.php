@@ -15,12 +15,12 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+        <div class="min-h-screen bg-slate-50">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-gradient-to-r from-primary-600 to-primary-700 shadow-lg">
+                <header class="bg-slate-900 border-b border-slate-800 shadow-sm">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         <div class="text-white">
                             {{ $header }}
@@ -31,13 +31,13 @@
 
             <!-- Page Content -->
             <main>
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-                    @include('partials.flash')
-                </div>
-                <x-flash />
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        @include('partials.flash')
+    </div>
+    <x-flash />
 
-                {{ $slot }}
-            </main>
+    {{ $slot }}
+</main>
 
         </div>
     </body>
